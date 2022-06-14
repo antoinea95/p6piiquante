@@ -1,5 +1,7 @@
+// import de jwt pour l'échange de token
 const jwt = require('jsonwebtoken');
 
+// export de la fonction qui permet d'authentifié les requête utilisateur
 module.exports = (req, res, next) => {
 
     try {

@@ -1,11 +1,14 @@
+//import de multer
 const multer = require('multer');
 
+// mise en place d'un dictionnaire pour récupérer les extensions image
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpeg',
     'image/png': 'png',
 }
 
+// création de la destination et du nom du fichier récupéré
 const storage = multer.diskStorage ({
     destination: (req, file, callback) => {
         callback(null, 'images')
@@ -17,4 +20,5 @@ const storage = multer.diskStorage ({
     }
 });
 
+// export
 module.exports = multer({storage}).single('image');

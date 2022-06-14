@@ -19,8 +19,6 @@ mongoose.connect('mongodb+srv://antoinea95:2638691995Aa_@cluster0.guou6yl.mongod
 
 
 const app = express();
-// express récupère toute les requêtes avec un content type json et met à disposition leur body directement dans l'objet req
-
 
 /* Headers permettent d'accéder à l'API depuis n'importe quelle orgine, d'ajouter les headers mentionnées 
 et de formuler les requêtes avec les méthodes mentionnées */
@@ -32,9 +30,11 @@ app.use((req, res, next) => {
   });
 app.use(bodyParser.json());
 
+// mise en place des routes
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoute);
 app.use('/api/sauces', sauceRoute);
 
 
+// export de l'app
 module.exports = app;

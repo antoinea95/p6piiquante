@@ -1,15 +1,18 @@
+// import de bcrypt pour le hash et de jwt pour la gestion des échanges du token
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// import du ficher env
 require('dotenv').config();
 
+// import du model user
 const User = require('../models/user');
 
 
 //inscription d'un utilisateur
 exports.signup = (req ,res,next) => {
 
-    // hash du mot de passe
+    // hash du mot de passe avec bcrypt
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
@@ -34,6 +37,7 @@ exports.login = (req, res, next) => {
             if(!user) {
                 return res.status(401).json({error: 'utilisateur non trouvé'})
             }
+            // comparaison des hashs pour valider le mot de passe
             bcrypt.compare(req.body.password, user.password)
                 .then( valid => {
                     if(!valid) {
