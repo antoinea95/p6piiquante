@@ -4,7 +4,7 @@ const fs = require('fs');
 
 
 // controller pour créer la sauce (route post)
-exports.createSauce = (req, res, next) => {
+exports.createSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
     const sauce = new Sauce({
         ...sauceObject,
@@ -16,21 +16,21 @@ exports.createSauce = (req, res, next) => {
 };
 
 // controller pour afficher toutes les sauces (get)
-exports.getAllSauces = (req, res, next) => {
+exports.getAllSauces = (req, res) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))
         .catch(error => res.status(400).json({error}));
 };
 
 // controller pour afficher une seule sauce (get)
-exports.getOneSauce = (req, res, next) => {
+exports.getOneSauce = (req, res) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({error}))
 };
 
 // controller pour modifier la sauce (post)
-exports.modifySauce = (req, res, next) => {
+exports.modifySauce = (req, res) => {
 
     // si la requête contient alors on supprime l'image
     if(req.file) {
@@ -59,7 +59,7 @@ exports.modifySauce = (req, res, next) => {
 
 
 // controller pour supprimer une sauce
-exports.deleteSauce = (req, res, next) => {
+exports.deleteSauce = (req, res) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1];
@@ -73,7 +73,7 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 // controler pour liker une sauce
-exports.likeSauce = (req, res, next) => {
+exports.likeSauce = (req, res) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {
             const userId = req.body.userId;

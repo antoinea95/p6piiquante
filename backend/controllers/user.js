@@ -1,22 +1,27 @@
 // import de bcrypt pour le hash et de jwt pour la gestion des échanges du token
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crytpoJs = require('crypto-js');
 
 // import du ficher env
 require('dotenv').config();
+
 
 // import du model user
 const User = require('../models/user');
 
 
 //inscription d'un utilisateur
-exports.signup = (req ,res,next) => {
+exports.signup = (req ,res) => {
+
+    // cryptage de l'email dans la DB
+    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, `${process.env.EMAIL_KEY}`).toString();
 
     // hash du mot de passe avec bcrypt
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
-                email: req.body.email,
+                email: emailCrypt,
                 password: hash
             });
             // sauvegarde de l'utilisateur
@@ -30,9 +35,13 @@ exports.signup = (req ,res,next) => {
 
 
 // connexion d'un utilisateur
-exports.login = (req, res, next) => {
+exports.login = (req, res) => {
+
+    // cryptage de l'email dans la DB
+    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, `${process.env.EMAIL_KEY}`).toString();
+
     // trouve le user dans la base de donnée
-    User.findOne({email: req.body.email})
+    User.findOne({email: emailCrypt})
         .then(user => {
             if(!user) {
                 return res.status(401).json({error: 'utilisateur non trouvé'})
