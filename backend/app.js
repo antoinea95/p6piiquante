@@ -13,7 +13,7 @@ require('dotenv').config();
 const userRoute = require('./routes/user');
 const sauceRoute = require('./routes/sauce');
 
-// init mongoose (a masquer .env.js)
+// init mongoose
 mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.USER_PW}@${process.env.CLUSTER_NAME}/?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -22,6 +22,8 @@ mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.USER_PW}@${
 
 
 const app = express();
+
+//helmet permet de mettre en place des header qui sécurise l'app
 app.use(helmet());
 
 /* Headers permettent d'accéder à l'API depuis n'importe quelle orgine, d'ajouter les headers mentionnées 
@@ -35,6 +37,8 @@ app.use((req, res, next) => {
 
 
 app.use(bodyParser.json());
+
+// permet de lutter contre l'injection
 app.use(mongoSanitize());
 
 

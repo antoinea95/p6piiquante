@@ -1,6 +1,8 @@
 // import de bcrypt pour le hash et de jwt pour la gestion des échanges du token
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+// cryptoJs permet de crypter les données
 const crytpoJs = require('crypto-js');
 
 // import du ficher env
@@ -53,6 +55,7 @@ exports.login = (req, res) => {
                         return res.status(401).json({error: 'mot de passe incorrect'})
                     }
                     return res.status(200).json({
+                        // renvoie un userId et un jeton
                         userId: user._id,
                         token: jwt.sign(
                             {userId: user._id},
