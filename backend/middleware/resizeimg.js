@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
     const {filename: image} = req.file;
 
     await sharp(req.file.path)
-    .resize(500, null)
+    .resize(400, null)
     .toFile(path.resolve(req.file.destination, 'resized', image))
     fs.unlink(req.file.path, (err) => {
         if(err) {
