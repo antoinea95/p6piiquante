@@ -86,13 +86,17 @@ exports.likeSauce = (req, res) => {
             // switch qui vérifie si la condition est true
             switch(true) {
 
-                case like===1:
+                case like !== 0 && dislikeId || like !==00 && likeId:
+                return res.status(403).json({error: 'Non autorisé'});
+                break;
+
+                case like===1 && likeId === false:
                 Sauce.updateOne({_id: req.params.id}, {$inc:{likes: +1}, $push:{usersLiked:userId}})
                 .then(() => res.status(200).json({message: "Like envoyé"}))
                 .catch(error => res.status(400).json({error}));
                 break;
 
-                case like === -1:
+                case like === -1 && dislikeId === false:
                 Sauce.updateOne({_id: req.params.id}, {$inc:{dislikes: +1}, $push:{usersDisliked:userId}})
                 .then(() => res.status(200).json({message: "Dislike envoyé"}))
                 .catch(error => res.status(400).json({error}));
@@ -106,8 +110,12 @@ exports.likeSauce = (req, res) => {
 
                 case like === 0 && dislikeId:
                 Sauce.updateOne({_id: req.params.id}, {$inc:{dislikes: -1}, $pull:{usersDisliked:userId}})
-                .then(() => res.status(200).json({message: "Like annulé"}))
+                .then(() => res.status(200).json({message: "Dislike annulé"}))
                 .catch(error => res.status(400).json(console.log(error)));
+                break;
+
+                case like !== 0 && dislikeId:
+                return res.status(403).json({error: 'Non autorisé'});
                 break;
             }
         })
