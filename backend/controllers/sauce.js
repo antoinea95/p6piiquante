@@ -3,7 +3,7 @@ const Sauce = require('../models/sauce');
 const fs = require('fs');
 
 
-// controller pour créer la sauce (route post)
+// controller pour créer la sauce (post)
 exports.createSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
     const sauce = new Sauce({
@@ -72,21 +72,21 @@ exports.deleteSauce = (req, res) => {
         .catch(error => res.status(500).json({error}))
 };
 
-// controler pour liker une sauce
+// controller pour liker une sauce
 exports.likeSauce = (req, res) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {
             const userId = req.body.userId;
             const like = req.body.like;
 
-            // renvoie true sur le tableau contient l'userId
+            // renvoie true si le tableau contient l'userId
             const likeId = sauce.usersLiked.includes(userId);
             const dislikeId = sauce.usersDisliked.includes(userId);
 
             // switch qui vérifie si la condition est true
             switch(true) {
 
-                case like !== 0 && dislikeId || like !==00 && likeId:
+                case like !== 0 && dislikeId || like !== 0 && likeId:
                 return res.status(403).json({error: 'Non autorisé'});
                 break;
 

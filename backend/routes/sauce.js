@@ -1,4 +1,4 @@
-// import d'express et mise ne place du router
+// import d'express et mise en place du router
 const express = require('express');
 const router = express.Router();
 
