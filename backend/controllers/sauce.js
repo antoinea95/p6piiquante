@@ -1,18 +1,25 @@
 // import des models et du module file system
 const Sauce = require('../models/sauce');
 const fs = require('fs');
+const sauce = require('../models/sauce');
 
 
 // controller pour créer la sauce (post)
 exports.createSauce = (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
+    delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/resized/${req.file.filename}`
     });
-    sauce.save()
+
+    if(sauce.userId === req.token.userId) {
+        sauce.save()
         .then(() => res.status(201).json({message: "sauce créée!"}))
         .catch(error => res.status(400).json({error}));
+    } else {
+        res.status(401).json({error: "utilisateur non valable"});
+    }  
 };
 
 // controller pour afficher toutes les sauces (get)
@@ -32,7 +39,6 @@ exports.getOneSauce = (req, res) => {
 // controller pour modifier la sauce (post)
 exports.modifySauce = (req, res) => {
 
-    // si la requête contient alors on supprime l'image
     if(req.file) {
         Sauce.findOne({_id: req.params.id})
         .then(sauce => {
@@ -45,16 +51,27 @@ exports.modifySauce = (req, res) => {
         })
         .catch(error => res.status(500).json({error}))
     }
+    
+    sauce.findOne({_id: req.params.id})
+    .then(sauce => {
 
-    // si la requête contien un fichier on récupère l'objet sauce qu'on parse et on modifie l'url de l'image
-    const sauceObject = req.file ?
-    {   
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/resized/${req.file.filename}`
-    }: {...req.body};
-    Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id})
-        .then(() => res.status(200).json({message: 'Sauce modifiée'}))
-        .catch(error => res.status(400).json({error}));
+        // si la requête contien un fichier on récupère l'objet sauce qu'on parse et on modifie l'url de l'image
+        const sauceObject = req.file ?
+        {   
+            ...JSON.parse(req.body.sauce),
+            imageUrl: `${req.protocol}://${req.get('host')}/images/resized/${req.file.filename}`
+        }: {...req.body};
+        
+        if(sauce.userId === req.token.userId) {
+            Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id})
+            .then(() => res.status(200).json({message: 'Sauce modifiée'}))
+            .catch(error => res.status(400).json({error}));
+        } else {
+            res.status(401).json({error:"non autorisé"});
+        }
+    })
+    .catch(error => res.status(500).json({error}))
+
 }
 
 
@@ -62,12 +79,19 @@ exports.modifySauce = (req, res) => {
 exports.deleteSauce = (req, res) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {
-            const filename = sauce.imageUrl.split('/resized/')[1];
-            fs.unlink(`images/resized/${filename}`, () => {
+
+            // On vérifie sur l'userId du créateur de la sauce est identique à l'utilisateur qui supprime la sauce
+            if(sauce.userId === req.token.userId) {
+                const filename = sauce.imageUrl.split('/resized/')[1];
+                fs.unlink(`images/resized/${filename}`, () => {
                 Sauce.deleteOne({_id: req.params.id})
                 .then(() => res.status(200).json({message: 'Sauce delete'}))
                 .catch(error => res.status(400).json({error}));
             });
+
+            } else {
+                res.status(401).json({error: 'Non autorisé'});
+            }    
         })
         .catch(error => res.status(500).json({error}))
 };

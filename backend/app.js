@@ -23,9 +23,6 @@ mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.USER_PW}@${
 
 const app = express();
 
-//helmet permet de mettre en place des header qui sécurise l'app
-app.use(helmet());
-
 /* Headers permettent d'accéder à l'API depuis n'importe quelle orgine, d'ajouter les headers mentionnées 
 et de formuler les requêtes avec les méthodes mentionnées */
 app.use((req, res, next) => {
