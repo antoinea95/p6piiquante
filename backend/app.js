@@ -1,13 +1,11 @@
 // création d'un app express
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 
-// import env
-require('dotenv').config();
+
 
 //import router
 const userRoute = require('./routes/user');
@@ -23,6 +21,8 @@ mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.USER_PW}@${
 
 const app = express();
 
+app.use(helmet());
+
 /* Headers permettent d'accéder à l'API depuis n'importe quelle orgine, d'ajouter les headers mentionnées 
 et de formuler les requêtes avec les méthodes mentionnées */
 app.use((req, res, next) => {
@@ -32,11 +32,12 @@ app.use((req, res, next) => {
   next();
 });
 
-
-app.use(bodyParser.json());
-
 // permet de lutter contre l'injection
 app.use(mongoSanitize());
+
+app.use(express.json());
+
+
 
 
 // mise en place des routes

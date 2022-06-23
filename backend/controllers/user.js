@@ -5,10 +5,6 @@ const jwt = require('jsonwebtoken');
 // cryptoJs permet de crypter les données
 const crytpoJs = require('crypto-js');
 
-// import du ficher env
-require('dotenv').config();
-
-
 // import du model user
 const User = require('../models/user');
 
@@ -17,7 +13,7 @@ const User = require('../models/user');
 exports.signup = (req ,res) => {
 
     // cryptage de l'email dans la DB
-    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, `${process.env.EMAIL_KEY}`).toString();
+    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString();
 
     // hash du mot de passe avec bcrypt
     bcrypt.hash(req.body.password, 10)
@@ -40,7 +36,7 @@ exports.signup = (req ,res) => {
 exports.login = (req, res) => {
 
     // cryptage de l'email dans la DB
-    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, `${process.env.EMAIL_KEY}`).toString();
+    const emailCrypt = crytpoJs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString();
 
     // trouve le user dans la base de donnée
     User.findOne({email: emailCrypt})
@@ -59,7 +55,7 @@ exports.login = (req, res) => {
                         userId: user._id,
                         token: jwt.sign(
                             {userId: user._id},
-                            `${process.env.TOKEN_SECRET_KEY}`,
+                            process.env.TOKEN_SECRET_KEY,
                             {expiresIn: '24h'}
                         )
                     })
